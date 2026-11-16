@@ -1,6 +1,6 @@
-# Prop Firm Challenge Calculator.
+# Prop Firm Challenge Calculator
 
-A trading analysis tool for examining prop firm challenges through the relationship between profit targets, drawdown limits and trading risk.
+A probability and risk-analysis tool I built to help traders examine the difficulty and potential cost of passing one-phase and two-phase prop firm challenges.
 
 **Live application:** [Open the Prop Firm Challenge Calculator](https://script.google.com/macros/s/AKfycbwnaxx80HH8lQtKq4RHcDCzDiXhXzvbLEqvZcLG7QeLJSCT9v-QReTIKrf6S_MtXKG1KA/exec)
 
@@ -10,167 +10,239 @@ An independent project by **Francis Chizurumoke**, developed with coding assista
 
 ---
 
-## The idea behind the project
+## Project overview
 
-A prop firm challenge is often presented as a simple objective: reach a profit target without breaching a maximum loss or drawdown limit.
+I built this calculator to examine how a trader's win rate, reward-to-risk ratio and risk per trade interact with the profit target and drawdown limits of a prop firm challenge.
 
-But the target alone does not describe the difficulty of the challenge. The trader's win rate, reward-to-risk profile, risk per trade and sequence of wins and losses can all affect the chance of reaching the target before hitting the loss boundary.
+The calculator supports four setup combinations:
 
-I wanted to explore this as a probability and risk-management problem.
+- **1-Phase with Initial Drawdown**
+- **1-Phase with Trailing Drawdown**
+- **2-Phase with Initial Drawdown**
+- **2-Phase with Trailing Drawdown**
 
-The central question is:
+For a two-phase challenge, the user can enter separate profit targets, maximum drawdown limits and risk-per-trade settings for Phase 1 and Phase 2.
 
-> Given a set of trading assumptions and challenge boundaries, how should I think about the likelihood of reaching the profit target before breaching the permitted loss?
+After the assumptions are entered, the calculator produces probability and cost estimates and compares different risk levels. The aim is to make it easier to see how changing risk affects the estimated chance of passing and the potential cost of repeated attempts.
 
-The calculator is intended to help traders compare hypothetical scenarios and think more carefully about risk before attempting an evaluation.
+## The problem I wanted to explore
 
-## What it helps traders examine
+Many traders look at a prop firm challenge and focus mainly on the profit target. For example, they see an 8% or 10% target and start thinking about how quickly they can reach it.
 
-The project is designed around the relationship between:
+But the target is only one part of the challenge.
 
-- **Win rate:** the assumed proportion of trades that are winners.
-- **Reward-to-risk:** the average reward relative to the amount risked.
-- **Risk per trade:** the percentage of account equity placed at risk on each trade.
-- **Profit target:** the required gain or success boundary.
-- **Maximum drawdown:** the loss boundary that must not be breached.
+A trader also has to stay within the maximum drawdown, manage risk across a sequence of trades and, in some programs, pass more than one evaluation phase. Challenge fees matter too. Failing several attempts can become expensive, even when the account size looks attractive.
 
-The precise inputs, options and outputs should be checked against the live application. This README describes the analytical purpose and the model concepts behind the project; it does not claim that every possible prop firm rule is implemented.
+I wanted to build something that brought these factors together.
 
-## The probability idea: Gambler's Ruin
+The question behind the project was simple:
 
-One mathematical concept relevant to this project is **Gambler's Ruin**. In broad terms, this family of probability models studies the chance of reaching one boundary before another through a sequence of outcomes.
+> Based on my trading assumptions and the challenge rules I enter, what does the probability of passing look like, how many attempts might be needed, and what could those attempts cost?
 
-For a trading challenge, the two boundaries can be described as:
+I did not want to look at risk per trade in isolation. I wanted to compare it against both the profit target and the loss boundary.
 
-- Success: reaching the required profit target.
-- Failure: reaching the maximum permitted loss or drawdown.
+## How one-phase and two-phase challenges work
 
-A theoretical model can estimate the probability of reaching the success boundary first, given assumptions about the distribution of trade outcomes and the distance to each boundary.
+Prop firms do not all use the same evaluation rules. However, the two common structures can be explained as follows.
 
-The supporting analysis for this project explored an empirical-distribution-based version of this approach, using historical R-multiples to estimate a parameter for the probability calculation. This is a theoretical approximation, not a full path-by-path simulation of every prop firm's rules.
+### One-phase challenge
 
-## Understanding R and risk per trade
+A one-phase challenge has a single evaluation stage. The trader must reach the required profit target while staying within the firm's drawdown and any other applicable rules.
 
-R represents the initial amount risked on a trade.
+Once the evaluation objectives are met and the firm completes its review, the trader may progress to the firm's funded or rewards account arrangement. There is no second evaluation phase in this structure.
 
-- A result of -1R means the initial risk was lost.
-- A result of +2R means the trade made twice the initial risk.
-- A result of +3R means the trade made three times the initial risk.
-- A result of 0R represents a breakeven trade.
+### Two-phase challenge
 
-A percentage target and drawdown can be expressed approximately in R units when risk per trade is fixed and the boundaries are compatible.
+A two-phase challenge has two evaluation stages.
 
-For illustration only:
+1. **Phase 1:** The trader must reach the first profit target without breaching the applicable loss limits.
+2. **Phase 2:** After passing Phase 1, the trader must meet a second profit target while continuing to respect the applicable rules.
 
-- Profit target: 8%.
-- Maximum drawdown: 10%.
-- Risk per trade: 1%.
+The second target is often lower than the first, but the exact targets and loss limits depend on the firm and program. Passing both evaluation phases may lead to a funded or rewards account after the firm's review and onboarding requirements.
 
-This corresponds to an 8R target and a 10R loss boundary under a simplified fixed-risk interpretation. It does not mean eight trades are needed to reach the target. The number of trades depends on the distribution and expectancy of outcomes, and the actual account rules.
+### Initial drawdown and trailing drawdown
 
-## Why risk per trade changes the problem
+The calculator also lets the user choose between two drawdown approaches.
 
-Increasing risk per trade can make the profit target closer when measured in R, but it also makes the drawdown boundary closer.
+- **Initial drawdown:** The loss boundary is measured against the starting account balance. The boundary does not move up with account growth under a simple fixed-limit interpretation.
+- **Trailing drawdown:** The loss boundary follows a defined account high-water mark or another reference point set by the firm. The exact calculation can depend on whether the firm uses balance or equity, intraday or end-of-day values, and whether the limit stops trailing at a particular level.
 
-Reducing risk per trade generally increases the number of R units needed to reach a fixed percentage target, while also increasing the R distance to a fixed percentage loss boundary.
+The calculator displays a simplified trailing drawdown option and states that its effective limit is 70% of the stated amount. This is a calculator assumption, not a universal prop firm rule. It should not be treated as an exact reproduction of any firm's trailing drawdown policy.
 
-That is why looking only at how quickly a target might be reached is incomplete. A useful comparison must consider the success and failure boundaries together.
+For examples of how actual firms define their products, see the official rule pages linked in the references section below. Always check the current rules for the exact challenge you intend to take.
 
-## How I approached the development
+## Your contribution
 
-The project began with a practical question: how could a trader evaluate a prop firm challenge using probability and risk assumptions rather than focusing only on the headline profit target?
+This is my own project. I came up with the idea, identified the problem I wanted to solve and planned how the calculator should work.
 
-The development process involved:
+My contribution included:
 
-1. **Identify the decision problem.** Consider the relationship between the target, drawdown limit and risk taken on each trade.
-2. **Explore the mathematical framework.** Investigate probability models related to reaching one boundary before another, including Gambler's Ruin.
-3. **Plan the calculation workflow.** Define the inputs and supporting calculations needed to examine different hypothetical conditions.
-4. **Build the spreadsheet backend.** Use Google Sheets to organise the supporting calculations.
-5. **Create the web application.** Use Google Apps Script for the interactive calculator interface and application logic.
-6. **Use AI as a coding assistant.** Work with Claude during implementation. I directed the project idea, analytical requirements, workflow and testing.
-7. **Manually stress-test the system.** Run a series of hypothetical scenarios, vary the assumptions and review the resulting behaviour.
+- Defining the purpose of the calculator and the questions it should help answer.
+- Planning the one-phase and two-phase challenge options.
+- Deciding that users should be able to compare initial and trailing drawdown setups.
+- Identifying the inputs needed for the analysis, including win rate, reward-to-risk, phase targets, drawdown limits and risk per trade.
+- Planning the comparison of multiple risk levels and the result summaries.
+- Reviewing the interface and the way the information is presented.
+- Running manual tests with different hypothetical inputs and reviewing the outputs.
 
-I have run manual tests and the results have been encouraging so far. This describes my own testing experience; it is not independent mathematical verification or proof of predictive accuracy.
+I used Claude as a coding assistant during development. It helped with implementation, but the project direction, requirements, workflow and testing decisions came from me.
 
-## Technology and structure
+## Tools and technology
 
-| Component | Role |
+| Tool | How I used it |
 | --- | --- |
-| Google Sheets | Spreadsheet backend for supporting data and calculations |
-| Google Apps Script | Application logic and interactive web interface |
+| Google Sheets | Spreadsheet backend for supporting calculations and data |
+| Google Apps Script | Application logic and web interface |
 | Claude | AI coding assistance during development |
+| GitHub | Project repository, version history, README and screenshots |
+| Browser testing | Opening the live calculator and checking different input combinations |
 
-The deployed Apps Script URL provides access to the calculator. Google Sheets supports the calculation workflow behind it.
+I used the tools to turn the idea into an interactive calculator that people can access through a browser.
 
-## Understanding the model and its limitations
+## Methodology
 
-The supporting analysis identified several important issues to keep in mind when interpreting a simplified challenge probability model:
+I approached the project by breaking the challenge into its main variables and then organising them into a workflow.
 
-1. **Breakeven trades:** A model that only represents wins and losses may not correctly represent trades that close at 0R.
-2. **Variable outcomes:** Replacing all wins and losses with average values can hide the variability in actual R-multiple results.
-3. **Trailing drawdown:** A simple fixed boundary or rough adjustment does not necessarily reproduce a firm's real trailing drawdown rule. The firm's exact balance- or equity-based definition matters.
-4. **Daily loss limits:** A model that does not track daily equity or balance changes cannot be assumed to enforce daily loss rules.
-5. **Trade count estimates:** Dividing a target by risk gives a target measured in R, not the number of trades required. Estimating trade count also requires an expectancy assumption and remains uncertain.
-6. **Model assumptions:** Theoretical estimates rely on assumptions such as independent outcomes, a representative historical distribution, fixed risk and compatible boundaries.
+### 1. Define the challenge structure
 
-A full path-based Monte Carlo challenge model can be more appropriate when the rules depend on the path of account equity, daily loss, trailing drawdown or multiple challenge phases. The exact rules must be explicitly represented in the simulation to claim they are modelled.
+I started with the two evaluation formats: one-phase and two-phase. I then included the choice between initial and trailing drawdown, giving the calculator four setup combinations.
 
-The current deployed calculator should be checked before attributing specific rule-handling features or outputs to it.
+### 2. Identify the inputs
 
-## How traders can use it thoughtfully
+The calculator allows the user to set or select:
 
-A sensible workflow is to:
+- Win rate.
+- Reward-to-risk ratio.
+- Challenge phase structure.
+- Drawdown type.
+- Profit target for each applicable phase.
+- Maximum drawdown for each applicable phase.
+- Risk per trade for each applicable phase.
+- Challenge fee.
+- Account size.
+- Profit split.
 
-1. Start with trading statistics drawn from a meaningful sample of your own records.
-2. Use the actual profit target and drawdown limits for the challenge being considered.
-3. Compare more than one risk-per-trade assumption.
-4. Examine how sensitive the estimate is to changes in win rate and reward-to-risk.
-5. Consider whether the chosen risk remains acceptable through a losing sequence.
-6. Verify the firm's current rules independently before trading.
+The risk-per-trade options are compared across multiple levels, so the user can see how the estimates change rather than relying on a single risk setting.
 
-The calculator is intended to support scenario analysis, not to identify a guaranteed way to pass.
+### 3. Apply a probability framework
 
-## Screenshots
+The calculator is labelled as using a **Gambler's Ruin formula**. Gambler's Ruin is a family of probability problems concerned with reaching one boundary before another.
 
-The screenshots below show the calculator's interface and the main stages of using it, from the initial overview through challenge setup and the simulation output.
+That idea is relevant to a challenge: the trader is trying to reach a profit boundary without first reaching a loss boundary.
 
-### 1. Calculator overview
+The calculator uses the inputs to estimate the probability of passing the selected phase structure. For a two-phase setup, the results show the estimated probability for each phase and a combined estimate.
 
-The main interface of the Prop Firm Challenge Calculator.
+These figures should be understood as model outputs based on the assumptions entered, not as observed pass rates for a particular prop firm or a guarantee of what will happen to an individual trader.
+
+### 4. Compare risk levels
+
+Instead of showing only one result, the calculator presents a table comparing different risk-per-trade settings.
+
+This makes it easier to examine the trade-off. Increasing risk may bring the profit target closer in R terms, but it also brings the drawdown boundary closer. A higher risk setting is not automatically a better choice just because it may reduce the estimated number of trades or attempts.
+
+### 5. Examine the financial side
+
+The calculator also considers the challenge fee and profit split. Its result summary includes estimates such as:
+
+- **Pass rate:** the model's estimated probability of passing the selected setup.
+- **Attempts for 90%:** an estimate of how many attempts may be needed to reach a cumulative 90% chance of success under the model's assumptions.
+- **Expected trades to fund:** an estimate associated with reaching the funded stage.
+- **Expected cost:** an estimate of challenge costs across the attempts considered.
+- **5+ failure risk:** an estimate of the risk of needing five or more failed attempts.
+- **Break-even return on funded account:** the return indicated as necessary to recover the challenge costs, based on the inputs.
+
+These are estimates, not promises. Their usefulness depends on whether the assumptions are realistic and whether the calculation represents the actual challenge rules closely enough.
+
+## Validation
+
+I checked the calculator by manually entering different hypothetical scenarios and changing the inputs to see how the results responded.
+
+My checks included:
+
+- Comparing one-phase and two-phase setups.
+- Switching between initial and trailing drawdown.
+- Changing win rate and reward-to-risk assumptions.
+- Changing the profit target and maximum drawdown.
+- Comparing lower and higher risk-per-trade settings.
+- Reviewing the pass-rate, attempts, trade-count and cost outputs.
+- Checking whether the displayed comparisons changed when the inputs changed.
+
+I also reviewed the interface and the result table to make sure the selected risk level was identifiable and the different outputs could be compared.
+
+The results of my manual testing have been encouraging, but this is not an independent audit of the mathematical model. I have not established that the estimates predict the real-world pass rate of traders or reproduce every prop firm's evaluation rules.
+
+## Limitations
+
+There are important things this calculator does not establish.
+
+1. **It does not guarantee a pass.** A probability estimate cannot tell an individual trader what will happen on their next attempt.
+2. **It does not represent every prop firm.** Firms can use different profit targets, daily loss limits, maximum loss rules, consistency requirements, minimum trading days, time limits and prohibited trading practices.
+3. **Daily loss rules are not the same as overall drawdown.** A challenge can be failed by breaching a daily loss limit even when the overall account is still within its maximum drawdown. Do not assume the calculator checks a firm's daily limit unless that rule is explicitly represented in the live version.
+4. **Trailing drawdown rules vary.** Firms may calculate trailing limits using balance or equity, intraday or end-of-day values, and different high-water-mark rules. The calculator's displayed 70% effective-limit assumption is simplified and should not be treated as a firm's exact rule.
+5. **The model depends on the inputs.** An inaccurate win rate or reward-to-risk assumption can make the output misleading. A small or unrepresentative trading sample may not reflect future performance.
+6. **Trading outcomes are not necessarily independent.** Real results can change with market conditions, strategy performance, execution, slippage, fees and trader behaviour.
+7. **Estimated attempts and costs are not guaranteed expenses.** They are model-based estimates and depend on the assumptions used.
+8. **Passing an evaluation is not the same as receiving a payout.** Firms may have additional onboarding, account, consistency, payout and ongoing risk rules after the evaluation.
+
+The calculator is best used for comparing hypothetical scenarios and thinking about risk. It should not replace reading the firm's current rules or testing a strategy with a meaningful sample of trading data.
+
+## Evidence and project links
+
+The repository contains the project documentation and screenshots of the actual interface. The live application can be opened separately.
+
+- **[Open the live calculator](https://script.google.com/macros/s/AKfycbwnaxx80HH8lQtKq4RHcDCzDiXhXzvbLEqvZcLG7QeLJSCT9v-QReTIKrf6S_MtXKG1KA/exec)**
+- **[View the GitHub repository](https://github.com/Francisos1234/Prop-Firm-Challenge-Calculator)**
+- **[View the project screenshots](https://github.com/Francisos1234/Prop-Firm-Challenge-Calculator/tree/main)**
+
+### Screenshots
+
+#### 1. Calculator overview
+
+The starting screen, showing the one-phase and two-phase challenge options and the calculator's insights section.
 
 ![Prop Firm Challenge Calculator overview](1-%20overview%20A.png)
 
-### 2. Choosing challenge phases
+#### 2. Choosing the challenge structure and drawdown type
 
-An overview of the challenge-phase selection area.
+The user selects one-phase or two-phase, then chooses initial or trailing drawdown.
 
-![Choosing challenge phases](2-%20overview%20B%20choosing%20challenge%20phases.png)
+![Choosing challenge phases and drawdown type](2-%20overview%20B%20choosing%20challenge%20phases.png)
 
-### 3. Choosing challenge parameters
+#### 3. Entering challenge parameters
 
-The challenge configuration area, where the assumptions and parameters for an analysis are selected.
+The setup screen shows the win rate, reward-to-risk, phase targets, maximum drawdown, risk-per-trade selections, challenge fee, account size and profit split.
 
 ![Choosing challenge parameters](3-%20overview%20C%20choosing%20challenge%20parameters.png)
 
-### 4. Simulation result
+#### 4. Reviewing the results
 
-An example of the calculator's result display.
+The results include a summary for the selected risk level and a comparison table across the available risk settings.
 
 ![Simulation result](4-%20Simulation%20esult.png)
 
-### 5. Understanding the simulator
+#### 5. Insights and common mistakes
 
-An additional view explaining how to interpret and use the simulator.
+The calculator also includes explanations and reminders about strategy requirements, risk management, phase comparisons, drawdown types and common challenge mistakes.
 
 ![Understanding the simulator](5-%20Understanding%20the%20simulator.png)
 
+## References: examples of prop firm evaluation rules
 
-## Related project
+These official pages helped me understand how different firms describe one-step and two-step evaluations. They are examples, not rules that the calculator automatically applies.
 
-The companion [Monte Carlo Trading Simulator](https://github.com/Francisos1234/Monte-Carlo-Simulator) explores the range of outcomes across many hypothetical trading sequences.
+- [FTMO 1-Step Challenge](https://ftmo.com/en/1-step-challenge/)
+- [FTMO 2-Step Challenge](https://ftmo.com/en/2-step-challenge/)
+- [FTMO Trading Objectives](https://ftmo.com/en/trading-objectives/)
+- [The5ers 1-Step Plan Rules](https://the5ers.com/faqs/1-step-plan-rules-specifications/)
+- [The5ers 2-Step Plan Rules](https://the5ers.com/faqs/2-step-plan-rules-specifications/)
 
-My broader [Trading Performance Journal project](https://github.com/Francisos1234/Trading-performance-journal) documents a separate trading-performance analysis workflow.
+Prop firm rules can change. Always verify the current terms directly with the firm before purchasing or trading a challenge.
+
+## Related projects
+
+- [Monte Carlo Trading Simulator](https://github.com/Francisos1234/Monte-Carlo-Simulator) — explores the range of outcomes across many hypothetical trading sequences.
+- [Trading Performance Journal](https://github.com/Francisos1234/Trading-performance-journal) — documents a separate trading-performance analysis workflow.
 
 ## Disclaimer
 
-This project is for educational and analytical purposes only. It is not financial advice, a prop firm endorsement or a guarantee of passing a challenge. Estimates depend on the model, data and assumptions used. Always read and verify the current rules of the relevant prop firm.
+This project is for educational and analytical purposes only. It is not financial advice, a prop firm endorsement or a guarantee of passing a challenge. The estimates depend on the model and the assumptions entered. I have manually tested scenarios, but the calculator has not been independently audited or proven to predict real-world outcomes. Always read and verify the current rules of the relevant prop firm.
