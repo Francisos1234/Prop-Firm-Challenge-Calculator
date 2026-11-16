@@ -1,4 +1,4 @@
-# Prop Firm Challenge Calculator
+# Prop Firm Challenge Calculator.
 
 A trading analysis tool for examining prop firm challenges through the relationship between profit targets, drawdown limits and trading risk.
 
