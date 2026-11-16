@@ -132,14 +132,38 @@ The calculator is intended to support scenario analysis, not to identify a guara
 
 ## Screenshots
 
-Screenshots will be added after the initial repository setup.
+The screenshots below show the calculator's interface and the main stages of using it, from the initial overview through challenge setup and the simulation output.
 
-Suggested files:
+### 1. Calculator overview
 
-- `screenshots/calculator-overview.png` — main calculator interface.
-- `screenshots/inputs-and-rules.png` — available inputs.
-- `screenshots/results-summary.png` — probability estimate and result summary.
-- `screenshots/scenario-comparison.png` — comparison of hypothetical assumptions.
+The main interface of the Prop Firm Challenge Calculator.
+
+![Prop Firm Challenge Calculator overview](1-%20overview%20A.png)
+
+### 2. Choosing challenge phases
+
+An overview of the challenge-phase selection area.
+
+![Choosing challenge phases](2-%20overview%20B%20choosing%20challenge%20phases.png)
+
+### 3. Choosing challenge parameters
+
+The challenge configuration area, where the assumptions and parameters for an analysis are selected.
+
+![Choosing challenge parameters](3-%20overview%20C%20choosing%20challenge%20parameters.png)
+
+### 4. Simulation result
+
+An example of the calculator's result display.
+
+![Simulation result](4-%20Simulation%20esult.png)
+
+### 5. Understanding the simulator
+
+An additional view explaining how to interpret and use the simulator.
+
+![Understanding the simulator](5-%20Understanding%20the%20simulator.png)
+
 
 ## Related project
 
